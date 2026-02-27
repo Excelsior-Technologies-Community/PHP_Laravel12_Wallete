@@ -1,59 +1,497 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+#  PHP_Laravel12_Wallete
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+![Laravel](https://img.shields.io/badge/Laravel-12.x-red)
+![PHP](https://img.shields.io/badge/PHP-8.x-blue)
+![Breeze](https://img.shields.io/badge/Auth-Laravel%20Breeze-green)
+![Wallet](https://img.shields.io/badge/Wallet-bavix%2Flaravel--wallet-orange)
+![License](https://img.shields.io/badge/License-MIT-lightgrey)
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+##  Overview
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+This project is a **Wallet Management System** built with **Laravel 12**.
+It provides authentication and a complete digital wallet system where users can:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+* Register & Login
+* Deposit money
+* Withdraw money
+* View wallet balance
+* View transaction history
 
-## Learning Laravel
+The wallet functionality is powered by the `bavix/laravel-wallet` package.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+##  Features
 
-## Laravel Sponsors
+*  Laravel Breeze Authentication (Login/Register)
+*  User Wallet Creation (Auto-created per user)
+*  Deposit Money
+*  Withdraw Money
+*  Real-time Wallet Balance
+*  Transaction History
+*  Separate Wallet Layout
+*  Auth-Protected Wallet Routes
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+##  Folder Structure
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```
+wallet-project/
+│
+├── app/
+│   ├── Http/Controllers/
+│   │   └── WalletController.php
+│   └── Models/
+│       └── User.php
+│
+├── resources/views/
+│   ├── layouts/
+│   │   └── wallet.blade.php
+│   └── wallet/
+│       └── index.blade.php
+│
+├── routes/
+│   └── web.php
+│
+├── database/migrations/
+│
+└── .env
+```
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# 1. Project Installation
 
-## Code of Conduct
+## Step 1: Create New Laravel Project
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+composer create-project laravel/laravel wallet-project
+```
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Step 2: Configure Database
 
-## License
+Open `.env` file and update:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Then run:
+
+```bash
+php artisan migrate
+```
+
+---
+
+# 2. Install Authentication (Laravel Breeze)
+
+```bash
+composer require laravel/breeze --dev
+
+php artisan breeze:install
+
+npm install
+
+npm run dev
+
+php artisan migrate
+```
+
+Now authentication (login/register) is ready.
+
+---
+
+# 3. Install Wallet Package
+
+Install wallet package:
+
+```bash
+composer require bavix/laravel-wallet
+```
+
+Publish package files:
+
+```bash
+php artisan vendor:publish --provider="Bavix\Wallet\WalletServiceProvider"
+```
+
+Run migrations:
+
+```bash
+php artisan migrate
+```
+
+This creates the following tables:
+
+* wallets
+* transactions
+* transfers
+
+---
+
+# 4. Configure User Model
+
+Open:
+
+```
+app/Models/User.php
+```
+
+Replace the file with:
+
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+
+// Wallet
+use Bavix\Wallet\Traits\HasWallet;
+use Bavix\Wallet\Interfaces\Wallet;
+
+class User extends Authenticatable implements Wallet
+{
+    use HasFactory, Notifiable, HasWallet;
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+}
+```
+
+Now every user automatically has a wallet.
+
+---
+
+# 5. Create Wallet Controller
+
+Run:
+
+```bash
+php artisan make:controller WalletController
+```
+
+Open:
+
+```
+app/Http/Controllers/WalletController.php
+```
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class WalletController extends Controller
+{
+    // Display wallet balance and transaction history
+    public function index()
+    {
+        $user = auth()->user();
+
+        $balance = $user->balance;
+        $transactions = $user->transactions()->latest()->get();
+
+        return view('wallet.index', compact('balance', 'transactions'));
+    }
+
+    // Add money to the authenticated user's wallet
+    public function deposit(Request $request)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:1'
+        ]);
+
+        auth()->user()->deposit($request->amount);
+
+        return back()->with('success', 'Money Added Successfully');
+    }
+
+    // Withdraw money from the authenticated user's wallet
+    public function withdraw(Request $request)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:1'
+        ]);
+
+        $user = auth()->user();
+
+        if (!$user->canWithdraw($request->amount)) {
+            return back()->with('error', 'Insufficient Balance');
+        }
+
+        $user->withdraw($request->amount);
+
+        return back()->with('success', 'Money Withdrawn Successfully');
+    }
+}
+```
+
+---
+
+# 6. Add Web Routes
+
+Open:
+
+```
+routes/web.php
+```
+
+Add:
+
+```php
+<?php
+
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WalletController;
+use Illuminate\Support\Facades\Route;
+
+// Display welcome page
+Route::get('/', function () {
+    return view('welcome');
+});
+
+// Display dashboard page for authenticated and verified users
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+// Profile management routes (only for authenticated users)
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit'); // Show profile edit form
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update'); // Update profile information
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy'); // Delete user account
+});
+
+// Wallet routes (only for authenticated users)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/wallet', [WalletController::class, 'index'])->name('wallet.index'); // Show wallet page
+    Route::post('/wallet/deposit', [WalletController::class, 'deposit'])->name('wallet.deposit'); // Handle deposit request
+    Route::post('/wallet/withdraw', [WalletController::class, 'withdraw'])->name('wallet.withdraw'); // Handle withdraw request
+});
+
+// Authentication routes (login, register, logout, etc.)
+require __DIR__.'/auth.php';
+```
+
+---
+
+# 7. Create Custom Wallet Layout
+
+Create new layout file:
+
+```
+resources/views/layouts/wallet.blade.php
+```
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wallet Page</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-gray-100">
+
+<div class="max-w-5xl mx-auto mt-10 bg-white shadow-lg rounded-lg p-6">
+    @yield('content')
+</div>
+
+</body>
+</html>
+```
+
+This layout makes wallet page independent from dashboard layout.
+
+---
+
+# 8. Create Wallet View
+
+Create folder and file:
+
+```
+resources/views/wallet/index.blade.php
+```
+
+```blade
+@extends('layouts.wallet')
+
+@section('content')
+
+    <h2 class="text-2xl font-bold mb-6 text-center">
+        My Wallet
+    </h2>
+
+    <!-- Balance -->
+    <div class="mb-6 text-center">
+        <h3 class="text-xl font-semibold">
+            Current Balance:
+            <span class="text-blue-600">
+                ₹ {{ $balance }}
+            </span>
+        </h3>
+    </div>
+
+    <!-- Success Message -->
+    @if(session('success'))
+        <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <!-- Error Message -->
+    @if(session('error'))
+        <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    <!-- Deposit & Withdraw Forms -->
+    <div class="grid grid-cols-2 gap-6 mb-8">
+
+        <!-- Deposit -->
+        <form method="POST" action="{{ route('wallet.deposit') }}" class="bg-gray-50 p-4 rounded shadow">
+            @csrf
+            <h4 class="font-semibold mb-3 text-green-600">Add Money</h4>
+
+            <input type="number"
+                   name="amount"
+                   placeholder="Enter amount"
+                   class="w-full border p-2 rounded mb-3">
+
+            <button type="submit"
+                    class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600">
+                Deposit
+            </button>
+        </form>
+
+        <!-- Withdraw -->
+        <form method="POST" action="{{ route('wallet.withdraw') }}" class="bg-gray-50 p-4 rounded shadow">
+            @csrf
+            <h4 class="font-semibold mb-3 text-red-600">Withdraw Money</h4>
+
+            <input type="number"
+                   name="amount"
+                   placeholder="Enter amount"
+                   class="w-full border p-2 rounded mb-3">
+
+            <button type="submit"
+                    class="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600">
+                Withdraw
+            </button>
+        </form>
+
+    </div>
+
+    <!-- Transaction History -->
+    <h4 class="text-lg font-semibold mb-3">Transaction History</h4>
+
+    <div class="overflow-x-auto">
+        <table class="w-full border border-gray-200">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="p-2 border">Type</th>
+                    <th class="p-2 border">Amount</th>
+                    <th class="p-2 border">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($transactions as $transaction)
+                    <tr>
+                        <td class="p-2 border text-center">
+                            {{ ucfirst($transaction->type) }}
+                        </td>
+
+                        <td class="p-2 border text-center">
+                            @if($transaction->type == 'deposit')
+                                <span class="text-green-600 font-semibold">
+                                    + ₹ {{ abs($transaction->amount) }}
+                                </span>
+                            @else
+                                <span class="text-red-600 font-semibold">
+                                    - ₹ {{ abs($transaction->amount) }}
+                                </span>
+                            @endif
+                        </td>
+
+                        <td class="p-2 border text-center">
+                            {{ $transaction->created_at->format('d M Y H:i') }}
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="3" class="text-center p-4">
+                            No Transactions Yet
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+@endsection
+```
+
+---
+
+# Final Result
+
+After login, open:
+
+```
+http://127.0.0.1:8000/wallet
+```
+<img width="1022" height="495" alt="Screenshot 2026-02-18 115916" src="https://github.com/user-attachments/assets/998aa9b7-59fb-42a8-a907-b7df5caa01cc" />
+
+
+You now have:
+
+## Deposit system :
+
+<img width="1032" height="496" alt="Screenshot 2026-02-18 115938" src="https://github.com/user-attachments/assets/080d0c37-7276-4136-8337-48d2f6eb0595" />
+
+<img width="1028" height="539" alt="Screenshot 2026-02-18 120009" src="https://github.com/user-attachments/assets/3d7112d9-f195-4680-8b9c-2af166760bf9" />
+
+## Withdraw system:
+
+<img width="1028" height="477" alt="Screenshot 2026-02-18 120031" src="https://github.com/user-attachments/assets/f930a81c-021a-458a-a706-3d30b253d7fd" />
+
+<img width="1022" height="582" alt="Screenshot 2026-02-18 120049" src="https://github.com/user-attachments/assets/4ee9c606-3a18-4207-bd71-84409c157187" />
+
+## Transaction history:
+
+<img width="1033" height="291" alt="Screenshot 2026-02-18 122358" src="https://github.com/user-attachments/assets/6debe25a-fad5-4d9e-8925-2d4f6814d539" />
+
+
+
