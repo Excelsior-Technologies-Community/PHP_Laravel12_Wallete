@@ -14,6 +14,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
 /*
 |--------------------------------------------------------------------------
 | Dashboard
@@ -25,6 +26,7 @@ Route::get('/dashboard', function () {
 })
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +57,7 @@ Route::middleware('auth')->group(function () {
         'destroy'
     ])->name('profile.destroy');
 
+
     /*
     |--------------------------------------------------------------------------
     | Wallet Routes
@@ -66,15 +69,18 @@ Route::middleware('auth')->group(function () {
         'index'
     ])->name('wallet.index');
 
+
     Route::post('/wallet/deposit', [
         WalletController::class,
         'deposit'
     ])->name('wallet.deposit');
 
+
     Route::post('/wallet/withdraw', [
         WalletController::class,
         'withdraw'
     ])->name('wallet.withdraw');
+
 
     /*
     |--------------------------------------------------------------------------
@@ -86,7 +92,9 @@ Route::middleware('auth')->group(function () {
         WalletController::class,
         'export'
     ])->name('wallet.export');
+
 });
+
 
 /*
 |--------------------------------------------------------------------------
