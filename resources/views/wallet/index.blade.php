@@ -2,181 +2,304 @@
 
 @section('content')
 
-    <!-- ========================================================= -->
-    <!-- PAGE HEADER -->
-    <!-- ========================================================= -->
+<!-- ========================================================= -->
+<!-- PAGE HEADER -->
+<!-- ========================================================= -->
 
-    <div class="mb-8">
+<div class="mb-8">
 
-        <h1 class="text-3xl font-bold text-gray-800">
-            My Wallet
-        </h1>
+    <h1 class="text-3xl font-bold text-gray-800">
+        My Wallet
+    </h1>
 
-        <p class="text-gray-500 mt-1">
-            Manage your balance, transactions and wallet insights
+    <p class="text-gray-500 mt-1">
+        Manage your balance, transactions and wallet insights
+    </p>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- SUCCESS MESSAGE -->
+<!-- ========================================================= -->
+
+@if(session('success'))
+
+<div class="mb-6 bg-green-100 border border-green-300
+                    text-green-700 px-4 py-3 rounded-lg">
+
+    {{ session('success') }}
+
+</div>
+
+@endif
+
+
+<!-- ========================================================= -->
+<!-- ERROR MESSAGE -->
+<!-- ========================================================= -->
+
+@if(session('error'))
+
+<div class="mb-6 bg-red-100 border border-red-300
+                    text-red-700 px-4 py-3 rounded-lg">
+
+    {{ session('error') }}
+
+</div>
+
+@endif
+
+
+<!-- ========================================================= -->
+<!-- VALIDATION ERRORS -->
+<!-- ========================================================= -->
+
+@if($errors->any())
+
+<div class="mb-6 bg-red-100 border border-red-300
+                    text-red-700 px-4 py-3 rounded-lg">
+
+    <ul class="list-disc list-inside">
+
+        @foreach($errors->all() as $error)
+
+        <li>
+            {{ $error }}
+        </li>
+
+        @endforeach
+
+    </ul>
+
+</div>
+
+@endif
+
+
+<!-- ========================================================= -->
+<!-- WALLET ANALYTICS -->
+<!-- ========================================================= -->
+
+<div class="grid grid-cols-1 md:grid-cols-2
+                lg:grid-cols-4 gap-6 mb-8">
+
+    <!-- Balance -->
+
+    <div class="bg-white rounded-xl shadow-sm
+                    border border-gray-200 p-6">
+
+        <p class="text-sm font-medium text-gray-500">
+            Current Balance
+        </p>
+
+        <h2 class="text-3xl font-bold
+                       text-blue-600 mt-2">
+
+            ₹ {{ number_format($balance, 2) }}
+
+        </h2>
+
+        <p class="text-xs text-gray-400 mt-2">
+            Available wallet balance
         </p>
 
     </div>
 
 
-    <!-- ========================================================= -->
-    <!-- SUCCESS MESSAGE -->
-    <!-- ========================================================= -->
+    <!-- Deposits -->
 
-    @if(session('success'))
-
-        <div class="mb-6 bg-green-100 border border-green-300
-                    text-green-700 px-4 py-3 rounded-lg">
-
-            {{ session('success') }}
-
-        </div>
-
-    @endif
-
-
-    <!-- ========================================================= -->
-    <!-- ERROR MESSAGE -->
-    <!-- ========================================================= -->
-
-    @if(session('error'))
-
-        <div class="mb-6 bg-red-100 border border-red-300
-                    text-red-700 px-4 py-3 rounded-lg">
-
-            {{ session('error') }}
-
-        </div>
-
-    @endif
-
-
-    <!-- ========================================================= -->
-    <!-- VALIDATION ERRORS -->
-    <!-- ========================================================= -->
-
-    @if($errors->any())
-
-        <div class="mb-6 bg-red-100 border border-red-300
-                    text-red-700 px-4 py-3 rounded-lg">
-
-            <ul class="list-disc list-inside">
-
-                @foreach($errors->all() as $error)
-
-                    <li>
-                        {{ $error }}
-                    </li>
-
-                @endforeach
-
-            </ul>
-
-        </div>
-
-    @endif
-
-
-    <!-- ========================================================= -->
-    <!-- WALLET ANALYTICS -->
-    <!-- ========================================================= -->
-
-    <div class="grid grid-cols-1 md:grid-cols-2
-                lg:grid-cols-4 gap-6 mb-8">
-
-        <!-- Balance -->
-
-        <div class="bg-white rounded-xl shadow-sm
+    <div class="bg-white rounded-xl shadow-sm
                     border border-gray-200 p-6">
 
-            <p class="text-sm font-medium text-gray-500">
-                Current Balance
-            </p>
+        <p class="text-sm font-medium text-gray-500">
+            Total Deposits
+        </p>
 
-            <h2 class="text-3xl font-bold
-                       text-blue-600 mt-2">
-
-                ₹ {{ number_format($balance, 2) }}
-
-            </h2>
-
-            <p class="text-xs text-gray-400 mt-2">
-                Available wallet balance
-            </p>
-
-        </div>
-
-
-        <!-- Deposits -->
-
-        <div class="bg-white rounded-xl shadow-sm
-                    border border-gray-200 p-6">
-
-            <p class="text-sm font-medium text-gray-500">
-                Total Deposits
-            </p>
-
-            <h2 class="text-3xl font-bold
+        <h2 class="text-3xl font-bold
                        text-green-600 mt-2">
 
-                ₹ {{ number_format($totalDeposits, 2) }}
+            ₹ {{ number_format($totalDeposits, 2) }}
 
-            </h2>
+        </h2>
 
-            <p class="text-xs text-gray-400 mt-2">
+        <p class="text-xs text-gray-400 mt-2">
 
-                {{ $depositCount }}
-                deposit transactions
+            {{ $depositCount }}
+            deposit transactions
 
-            </p>
+        </p>
 
-        </div>
+    </div>
 
 
-        <!-- Withdrawals -->
+    <!-- Withdrawals -->
 
-        <div class="bg-white rounded-xl shadow-sm
+    <div class="bg-white rounded-xl shadow-sm
                     border border-gray-200 p-6">
 
-            <p class="text-sm font-medium text-gray-500">
-                Total Withdrawals
-            </p>
+        <p class="text-sm font-medium text-gray-500">
+            Total Withdrawals
+        </p>
 
-            <h2 class="text-3xl font-bold
+        <h2 class="text-3xl font-bold
                        text-red-600 mt-2">
 
-                ₹ {{ number_format($totalWithdrawals, 2) }}
+            ₹ {{ number_format($totalWithdrawals, 2) }}
 
-            </h2>
+        </h2>
 
-            <p class="text-xs text-gray-400 mt-2">
+        <p class="text-xs text-gray-400 mt-2">
 
-                {{ $withdrawalCount }}
-                withdrawal transactions
+            {{ $withdrawalCount }}
+            withdrawal transactions
+
+        </p>
+
+    </div>
+
+
+    <!-- Transactions -->
+
+    <div class="bg-white rounded-xl shadow-sm
+                    border border-gray-200 p-6">
+
+        <p class="text-sm font-medium text-gray-500">
+            Total Transactions
+        </p>
+
+        <h2 class="text-3xl font-bold
+                       text-purple-600 mt-2">
+
+            {{ $transactionCount }}
+
+        </h2>
+
+        <p class="text-xs text-gray-400 mt-2">
+            All wallet transactions
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- WALLET ALERTS -->
+<!-- ========================================================= -->
+
+@if($isLowBalance)
+
+<div class="mb-6 bg-yellow-50 border
+                    border-yellow-300 rounded-xl p-5">
+
+    <div class="flex items-start gap-4">
+
+        <div class="text-2xl">
+            ⚠️
+        </div>
+
+        <div>
+
+            <h3 class="font-bold text-yellow-800">
+                Low Balance Warning
+            </h3>
+
+            <p class="text-sm text-yellow-700 mt-1">
+
+                Your current wallet balance is
+
+                <strong>
+                    ₹ {{ number_format($balance, 2) }}
+                </strong>.
+
+                Your low-balance threshold is
+
+                <strong>
+                    ₹ {{ number_format($lowBalanceThreshold, 2) }}
+                </strong>.
+
+                Consider adding money to your wallet.
 
             </p>
 
         </div>
 
+    </div>
 
-        <!-- Transactions -->
+</div>
 
-        <div class="bg-white rounded-xl shadow-sm
-                    border border-gray-200 p-6">
+@endif
 
-            <p class="text-sm font-medium text-gray-500">
-                Total Transactions
+
+@if($largeWithdrawal)
+
+<div class="mb-6 bg-orange-50 border
+                    border-orange-300 rounded-xl p-5">
+
+    <div class="flex items-start gap-4">
+
+        <div class="text-2xl">
+            🚨
+        </div>
+
+        <div>
+
+            <h3 class="font-bold text-orange-800">
+                Large Withdrawal Alert
+            </h3>
+
+            <p class="text-sm text-orange-700 mt-1">
+
+                A withdrawal of
+
+                <strong>
+                    ₹ {{ number_format(
+                                abs((float) $largeWithdrawal->amount),
+                                2
+                            ) }}
+                </strong>
+
+                or more was detected.
+
+                Transaction ID:
+
+                <strong>
+                    #{{ $largeWithdrawal->id }}
+                </strong>
+
             </p>
 
-            <h2 class="text-3xl font-bold
-                       text-purple-600 mt-2">
+        </div>
 
-                {{ $transactionCount }}
+    </div>
 
+</div>
+
+@endif
+
+
+<!-- ========================================================= -->
+<!-- WALLET ACTIVITY INSIGHTS -->
+<!-- ========================================================= -->
+
+<div class="bg-white rounded-xl shadow-sm
+                border border-gray-200 p-6 mb-8">
+
+    <div class="flex items-center gap-3 mb-6">
+
+        <div class="text-2xl">
+            💡
+        </div>
+
+        <div>
+
+            <h2 class="text-xl font-bold text-gray-800">
+                Wallet Activity Insights
             </h2>
 
-            <p class="text-xs text-gray-400 mt-2">
-                All wallet transactions
+            <p class="text-sm text-gray-500">
+                Automatic analysis of your wallet activity
             </p>
 
         </div>
@@ -184,876 +307,1337 @@
     </div>
 
 
-    <!-- ========================================================= -->
-    <!-- WALLET ALERTS -->
-    <!-- ========================================================= -->
-
-    @if($isLowBalance)
-
-        <div class="mb-6 bg-yellow-50 border
-                    border-yellow-300 rounded-xl p-5">
-
-            <div class="flex items-start gap-4">
-
-                <div class="text-2xl">
-                    ⚠️
-                </div>
-
-                <div>
-
-                    <h3 class="font-bold text-yellow-800">
-
-                        Low Balance Warning
-
-                    </h3>
-
-                    <p class="text-sm text-yellow-700 mt-1">
-
-                        Your current wallet balance is
-
-                        <strong>
-                            ₹ {{ number_format($balance, 2) }}
-                        </strong>.
-
-                        Your low-balance threshold is
-
-                        <strong>
-                            ₹ {{ number_format($lowBalanceThreshold, 2) }}
-                        </strong>.
-
-                        Consider adding money to your wallet.
-
-                    </p>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    @endif
-
-
-    @if($largeWithdrawal)
-
-        <div class="mb-6 bg-orange-50 border
-                    border-orange-300 rounded-xl p-5">
-
-            <div class="flex items-start gap-4">
-
-                <div class="text-2xl">
-                    🚨
-                </div>
-
-                <div>
-
-                    <h3 class="font-bold text-orange-800">
-
-                        Large Withdrawal Alert
-
-                    </h3>
-
-                    <p class="text-sm text-orange-700 mt-1">
-
-                        A withdrawal of
-
-                        <strong>
-                            ₹ {{ number_format($largeWithdrawalAmount = abs((float) $largeWithdrawal->amount), 2) }}
-                        </strong>
-
-                        or more was detected.
-
-                        Transaction ID:
-
-                        <strong>
-                            #{{ $largeWithdrawal->id }}
-                        </strong>
-
-                    </p>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    @endif
-
-
-    <!-- ========================================================= -->
-    <!-- WALLET ACTIVITY INSIGHTS -->
-    <!-- ========================================================= -->
-
-    <div class="bg-white rounded-xl shadow-sm
-                border border-gray-200 p-6 mb-8">
-
-        <div class="flex items-center gap-3 mb-6">
-
-            <div class="text-2xl">
-                💡
-            </div>
-
-            <div>
-
-                <h2 class="text-xl font-bold text-gray-800">
-
-                    Wallet Activity Insights
-
-                </h2>
-
-                <p class="text-sm text-gray-500">
-
-                    Automatic analysis of your wallet activity
-
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="grid grid-cols-1 md:grid-cols-2
+    <div class="grid grid-cols-1 md:grid-cols-2
                     lg:grid-cols-4 gap-5">
 
-            <!-- Highest Deposit -->
+        <!-- Highest Deposit -->
 
-            <div class="bg-green-50 border
+        <div class="bg-green-50 border
                         border-green-200 rounded-lg p-5">
 
-                <p class="text-sm font-medium
+            <p class="text-sm font-medium
                           text-green-700">
 
-                    Highest Deposit
+                Highest Deposit
 
-                </p>
+            </p>
 
-                <p class="text-2xl font-bold
+            <p class="text-2xl font-bold
                           text-green-700 mt-2">
 
-                    ₹ {{ number_format($highestDepositAmount, 2) }}
+                ₹ {{ number_format(
+                        $highestDepositAmount,
+                        2
+                    ) }}
 
-                </p>
+            </p>
 
-                @if($highestDeposit)
+            @if($highestDeposit)
 
-                    <p class="text-xs text-green-600 mt-2">
+            <p class="text-xs text-green-600 mt-2">
 
-                        Transaction #{{ $highestDeposit->id }}
+                Transaction #{{ $highestDeposit->id }}
 
-                    </p>
+            </p>
 
-                @else
+            @else
 
-                    <p class="text-xs text-gray-500 mt-2">
+            <p class="text-xs text-gray-500 mt-2">
+                No deposits yet
+            </p>
 
-                        No deposits yet
+            @endif
 
-                    </p>
-
-                @endif
-
-            </div>
+        </div>
 
 
-            <!-- Highest Withdrawal -->
+        <!-- Highest Withdrawal -->
 
-            <div class="bg-red-50 border
+        <div class="bg-red-50 border
                         border-red-200 rounded-lg p-5">
 
-                <p class="text-sm font-medium
+            <p class="text-sm font-medium
                           text-red-700">
 
-                    Highest Withdrawal
+                Highest Withdrawal
 
-                </p>
+            </p>
 
-                <p class="text-2xl font-bold
+            <p class="text-2xl font-bold
                           text-red-700 mt-2">
 
-                    ₹ {{ number_format($highestWithdrawalAmount, 2) }}
+                ₹ {{ number_format(
+                        $highestWithdrawalAmount,
+                        2
+                    ) }}
 
-                </p>
+            </p>
 
-                @if($highestWithdrawal)
+            @if($highestWithdrawal)
 
-                    <p class="text-xs text-red-600 mt-2">
+            <p class="text-xs text-red-600 mt-2">
 
-                        Transaction #{{ $highestWithdrawal->id }}
+                Transaction #{{ $highestWithdrawal->id }}
 
-                    </p>
+            </p>
 
-                @else
+            @else
 
-                    <p class="text-xs text-gray-500 mt-2">
+            <p class="text-xs text-gray-500 mt-2">
+                No withdrawals yet
+            </p>
 
-                        No withdrawals yet
+            @endif
 
-                    </p>
-
-                @endif
-
-            </div>
+        </div>
 
 
-            <!-- Withdrawal Rate -->
+        <!-- Withdrawal Rate -->
 
-            <div class="bg-blue-50 border
+        <div class="bg-blue-50 border
                         border-blue-200 rounded-lg p-5">
 
-                <p class="text-sm font-medium
+            <p class="text-sm font-medium
                           text-blue-700">
 
-                    Withdrawal Rate
+                Withdrawal Rate
 
-                </p>
+            </p>
 
-                <p class="text-2xl font-bold
+            <p class="text-2xl font-bold
                           text-blue-700 mt-2">
 
-                    {{ number_format($withdrawalRate, 1) }}%
+                {{ number_format(
+                        $withdrawalRate,
+                        1
+                    ) }}%
 
-                </p>
+            </p>
 
-                <p class="text-xs text-blue-600 mt-2">
+            <p class="text-xs text-blue-600 mt-2">
+                Withdrawals vs deposits
+            </p>
 
-                    Withdrawals vs deposits
-
-                </p>
-
-            </div>
+        </div>
 
 
-            <!-- Latest Transaction -->
+        <!-- Latest Transaction -->
 
-            <div class="bg-purple-50 border
+        <div class="bg-purple-50 border
                         border-purple-200 rounded-lg p-5">
 
-                <p class="text-sm font-medium
+            <p class="text-sm font-medium
                           text-purple-700">
 
-                    Latest Activity
+                Latest Activity
 
-                </p>
+            </p>
 
-                @if($latestTransaction)
+            @if($latestTransaction)
 
-                    <p class="text-lg font-bold
+            <p class="text-lg font-bold
                               text-purple-700 mt-2">
 
-                        {{ ucfirst($latestTransaction->type) }}
+                {{ ucfirst(
+                            $latestTransaction->type
+                        ) }}
 
-                    </p>
+            </p>
 
-                    <p class="text-sm text-purple-600">
+            <p class="text-sm text-purple-600">
 
-                        ₹ {{ number_format(
+                ₹ {{ number_format(
                             abs((float) $latestTransaction->amount),
                             2
                         ) }}
 
-                    </p>
+            </p>
 
-                @else
+            @else
 
-                    <p class="text-sm text-gray-500 mt-2">
+            <p class="text-sm text-gray-500 mt-2">
+                No activity yet
+            </p>
 
-                        No activity yet
-
-                    </p>
-
-                @endif
-
-            </div>
+            @endif
 
         </div>
 
+    </div>
 
-        <!-- Wallet Insight Message -->
 
-        <div class="mt-6 bg-gray-50
+    <!-- Wallet Insight -->
+
+    <div class="mt-6 bg-gray-50
                     border border-gray-200
                     rounded-lg p-4">
 
-            <p class="text-sm text-gray-700">
+        <p class="text-sm text-gray-700">
 
-                <strong>
-                    Wallet Insight:
-                </strong>
+            <strong>
+                Wallet Insight:
+            </strong>
 
-                {{ $walletInsight }}
+            {{ $walletInsight }}
 
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <!-- ========================================================= -->
-    <!-- MONTHLY SUMMARY -->
-    <!-- ========================================================= -->
-
-    <div class="bg-white rounded-xl shadow-sm
-                border border-gray-200 p-6 mb-8">
-
-        <h2 class="text-xl font-bold text-gray-800">
-            Monthly Financial Summary
-        </h2>
-
-        <p class="text-sm text-gray-500 mb-6">
-            Current month's wallet activity
         </p>
 
+    </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+</div>
 
-            <div class="bg-green-50 border
+
+<!-- ========================================================= -->
+<!-- MONTHLY SUMMARY -->
+<!-- ========================================================= -->
+
+<div class="bg-white rounded-xl shadow-sm
+                border border-gray-200 p-6 mb-8">
+
+    <h2 class="text-xl font-bold text-gray-800">
+        Monthly Financial Summary
+    </h2>
+
+    <p class="text-sm text-gray-500 mb-6">
+        Current month's wallet activity
+    </p>
+
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div class="bg-green-50 border
                         border-green-200 rounded-lg p-5">
 
-                <p class="text-sm text-green-700 font-medium">
+            <p class="text-sm text-green-700 font-medium">
+                This Month Deposits
+            </p>
 
-                    This Month Deposits
-
-                </p>
-
-                <p class="text-2xl font-bold
+            <p class="text-2xl font-bold
                           text-green-700 mt-2">
 
-                    ₹ {{ number_format($monthlyDeposits, 2) }}
+                ₹ {{ number_format(
+                        $monthlyDeposits,
+                        2
+                    ) }}
 
-                </p>
+            </p>
 
-            </div>
+        </div>
 
 
-            <div class="bg-red-50 border
+        <div class="bg-red-50 border
                         border-red-200 rounded-lg p-5">
 
-                <p class="text-sm text-red-700 font-medium">
+            <p class="text-sm text-red-700 font-medium">
+                This Month Withdrawals
+            </p>
 
-                    This Month Withdrawals
-
-                </p>
-
-                <p class="text-2xl font-bold
+            <p class="text-2xl font-bold
                           text-red-700 mt-2">
 
-                    ₹ {{ number_format($monthlyWithdrawals, 2) }}
+                ₹ {{ number_format(
+                        $monthlyWithdrawals,
+                        2
+                    ) }}
 
-                </p>
-
-            </div>
+            </p>
 
         </div>
 
     </div>
 
+</div>
 
-    <!-- ========================================================= -->
-    <!-- DEPOSIT & WITHDRAW -->
-    <!-- ========================================================= -->
 
-    <div class="grid grid-cols-1 md:grid-cols-2
+<!-- ========================================================= -->
+<!-- DEPOSIT & WITHDRAW -->
+<!-- ========================================================= -->
+
+<div class="grid grid-cols-1 md:grid-cols-2
                 gap-6 mb-8">
 
-        <!-- Deposit -->
+    <!-- Deposit -->
 
-        <div class="bg-white rounded-xl shadow-sm
+    <div class="bg-white rounded-xl shadow-sm
                     border border-gray-200 p-6">
 
-            <h2 class="text-xl font-bold
+        <h2 class="text-xl font-bold
                        text-green-600 mb-4">
 
-                Add Money
+            Add Money
 
-            </h2>
+        </h2>
 
-            <p class="text-sm text-gray-500 mb-4">
+        <p class="text-sm text-gray-500 mb-4">
+            Add money to your wallet balance.
+        </p>
 
-                Add money to your wallet balance.
+        <form method="POST"
+            action="{{ route('wallet.deposit') }}">
 
-            </p>
+            @csrf
 
-            <form method="POST"
-                  action="{{ route('wallet.deposit') }}">
-
-                @csrf
-
-                <input
-                    type="number"
-                    name="amount"
-                    min="1"
-                    max="1000000"
-                    step="0.01"
-                    placeholder="Enter amount"
-                    value="{{ old('amount') }}"
-                    class="w-full border border-gray-300
+            <input
+                type="number"
+                name="amount"
+                min="1"
+                max="1000000"
+                step="0.01"
+                placeholder="Enter amount"
+                value="{{ old('amount') }}"
+                class="w-full border border-gray-300
                            rounded-lg p-3 mb-4"
-                    required
-                >
+                required>
 
-                <button
-                    type="submit"
-                    class="w-full bg-green-500
+            <button
+                type="submit"
+                class="w-full bg-green-500
                            hover:bg-green-600
                            text-white font-semibold
                            py-3 rounded-lg">
 
-                    Deposit Money
+                Deposit Money
 
-                </button>
+            </button>
 
-            </form>
-
-        </div>
-
-
-        <!-- Withdraw -->
-
-        <div class="bg-white rounded-xl shadow-sm
-                    border border-gray-200 p-6">
-
-            <h2 class="text-xl font-bold
-                       text-red-600 mb-4">
-
-                Withdraw Money
-
-            </h2>
-
-            <p class="text-sm text-gray-500 mb-4">
-
-                Withdraw money from your wallet.
-
-            </p>
-
-            <form method="POST"
-                  action="{{ route('wallet.withdraw') }}">
-
-                @csrf
-
-                <input
-                    type="number"
-                    name="amount"
-                    min="1"
-                    max="1000000"
-                    step="0.01"
-                    placeholder="Enter amount"
-                    class="w-full border border-gray-300
-                           rounded-lg p-3 mb-4"
-                    required
-                >
-
-                <button
-                    type="submit"
-                    class="w-full bg-red-500
-                           hover:bg-red-600
-                           text-white font-semibold
-                           py-3 rounded-lg">
-
-                    Withdraw Money
-
-                </button>
-
-            </form>
-
-        </div>
+        </form>
 
     </div>
 
 
-    <!-- ========================================================= -->
-    <!-- TRANSACTION HISTORY -->
-    <!-- ========================================================= -->
+    <!-- Withdraw -->
 
     <div class="bg-white rounded-xl shadow-sm
+                    border border-gray-200 p-6">
+
+        <h2 class="text-xl font-bold
+                       text-red-600 mb-4">
+
+            Withdraw Money
+
+        </h2>
+
+        <p class="text-sm text-gray-500 mb-4">
+            Withdraw money from your wallet.
+        </p>
+
+        <form method="POST"
+            action="{{ route('wallet.withdraw') }}">
+
+            @csrf
+
+            <input
+                type="number"
+                name="amount"
+                min="1"
+                max="1000000"
+                step="0.01"
+                placeholder="Enter amount"
+                class="w-full border border-gray-300
+                           rounded-lg p-3 mb-4"
+                required>
+
+            <button
+                type="submit"
+                class="w-full bg-red-500
+                           hover:bg-red-600
+                           text-white font-semibold
+                           py-3 rounded-lg">
+
+                Withdraw Money
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- TRANSACTION HISTORY -->
+<!-- ========================================================= -->
+
+<div class="bg-white rounded-xl shadow-sm
                 border border-gray-200 p-6">
 
-        <div class="flex flex-col md:flex-row
+    <div class="flex flex-col md:flex-row
                     md:justify-between
                     md:items-center gap-4 mb-6">
 
-            <div>
+        <div>
 
-                <h2 class="text-xl font-bold text-gray-800">
+            <h2 class="text-xl font-bold text-gray-800">
+                Transaction History
+            </h2>
 
-                    Transaction History
+            <p class="text-sm text-gray-500">
+                Search, filter, sort, paginate and export
+                wallet transactions.
+            </p>
 
-                </h2>
-
-                <p class="text-sm text-gray-500">
-
-                    Search, filter and export wallet transactions.
-
-                </p>
-
-            </div>
+        </div>
 
 
-            <!-- CSV Export -->
+        <!-- CSV Export -->
 
-            <a
-                href="{{ route('wallet.export', request()->query()) }}"
-                class="inline-flex items-center
+        <a
+            href="{{ route(
+                    'wallet.export',
+                    request()->except('page')
+                ) }}"
+            class="inline-flex items-center
                        justify-center
                        bg-gray-800
                        hover:bg-gray-900
                        text-white px-5 py-2.5
                        rounded-lg font-semibold">
 
-                Export CSV
+            📥 Export CSV
+
+        </a>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- FILTERED STATISTICS -->
+    <!-- ===================================================== -->
+
+    <div class="grid grid-cols-1 md:grid-cols-3
+                    gap-4 mb-6">
+
+        <!-- Filtered Count -->
+
+        <div class="bg-blue-50 border
+                        border-blue-200 rounded-lg p-4">
+
+            <p class="text-sm font-medium text-blue-700">
+                Filtered Transactions
+            </p>
+
+            <p class="text-2xl font-bold text-blue-700 mt-1">
+
+                {{ $filteredTransactionCount }}
+
+            </p>
+
+            <p class="text-xs text-blue-600 mt-1">
+                Matching current filters
+            </p>
+
+        </div>
+
+
+        <!-- Filtered Deposits -->
+
+        <div class="bg-green-50 border
+                        border-green-200 rounded-lg p-4">
+
+            <p class="text-sm font-medium text-green-700">
+                Filtered Deposit Total
+            </p>
+
+            <p class="text-2xl font-bold text-green-700 mt-1">
+
+                ₹ {{ number_format(
+                        $filteredDepositTotal,
+                        2
+                    ) }}
+
+            </p>
+
+            <p class="text-xs text-green-600 mt-1">
+                Matching deposit transactions
+            </p>
+
+        </div>
+
+
+        <!-- Filtered Withdrawals -->
+
+        <div class="bg-red-50 border
+                        border-red-200 rounded-lg p-4">
+
+            <p class="text-sm font-medium text-red-700">
+                Filtered Withdrawal Total
+            </p>
+
+            <p class="text-2xl font-bold text-red-700 mt-1">
+
+                ₹ {{ number_format(
+                        $filteredWithdrawalTotal,
+                        2
+                    ) }}
+
+            </p>
+
+            <p class="text-xs text-red-600 mt-1">
+                Matching withdrawal transactions
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- QUICK DATE FILTERS -->
+    <!-- ===================================================== -->
+
+    <div class="mb-5">
+
+        <p class="text-sm font-semibold
+                      text-gray-700 mb-2">
+
+            Quick Date Filters
+
+        </p>
+
+        <div class="flex flex-wrap gap-3">
+
+            <a
+                href="{{ route(
+                        'wallet.index',
+                        array_merge(
+                            request()->except([
+                                'page',
+                                'quick_date',
+                                'from_date',
+                                'to_date'
+                            ]),
+                            ['quick_date' => 'today']
+                        )
+                    ) }}"
+                class="px-4 py-2 rounded-lg
+                           font-semibold text-sm
+                           {{ request('quick_date') === 'today'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-blue-100 text-blue-700 hover:bg-blue-200' }}">
+
+                📅 Today
+
+            </a>
+
+
+            <a
+                href="{{ route(
+                        'wallet.index',
+                        array_merge(
+                            request()->except([
+                                'page',
+                                'quick_date',
+                                'from_date',
+                                'to_date'
+                            ]),
+                            ['quick_date' => 'this_month']
+                        )
+                    ) }}"
+                class="px-4 py-2 rounded-lg
+                           font-semibold text-sm
+                           {{ request('quick_date') === 'this_month'
+                                ? 'bg-purple-600 text-white'
+                                : 'bg-purple-100 text-purple-700 hover:bg-purple-200' }}">
+
+                📅 This Month
+
+            </a>
+
+
+            @if(request('quick_date'))
+
+            <a
+                href="{{ route(
+                            'wallet.index',
+                            request()->except([
+                                'page',
+                                'quick_date',
+                                'from_date',
+                                'to_date'
+                            ])
+                        ) }}"
+                class="px-4 py-2 rounded-lg
+                               font-semibold text-sm
+                               bg-gray-200
+                               hover:bg-gray-300
+                               text-gray-800">
+
+                Clear Date Filter
+
+            </a>
+
+            @endif
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- SEARCH & FILTER -->
+    <!-- ===================================================== -->
+
+    <form
+        method="GET"
+        action="{{ route('wallet.index') }}"
+        class="bg-gray-50 border
+                   border-gray-200
+                   rounded-lg p-5 mb-6">
+
+        <div class="grid grid-cols-1
+                        md:grid-cols-2
+                        lg:grid-cols-4
+                        gap-4">
+
+            <!-- 1. Search -->
+
+            <div class="lg:col-span-2">
+
+                <label
+                    class="block text-sm
+                               font-medium
+                               text-gray-700 mb-1">
+
+                    🔎 Search
+
+                </label>
+
+                <input
+                    type="text"
+                    name="search"
+                    value="{{ request('search') }}"
+                    placeholder="Transaction ID, type or amount"
+                    class="w-full border
+                               border-gray-300
+                               rounded-lg p-2.5">
+
+            </div>
+
+
+            <!-- Type -->
+
+            <div>
+
+                <label
+                    class="block text-sm
+                               font-medium
+                               text-gray-700 mb-1">
+
+                    Transaction Type
+
+                </label>
+
+                <select
+                    name="type"
+                    class="w-full border
+                               border-gray-300
+                               rounded-lg p-2.5">
+
+                    <option value="">
+                        All Types
+                    </option>
+
+                    <option
+                        value="deposit"
+                        {{ request('type') === 'deposit'
+                                ? 'selected'
+                                : '' }}>
+
+                        Deposit
+
+                    </option>
+
+                    <option
+                        value="withdraw"
+                        {{ request('type') === 'withdraw'
+                                ? 'selected'
+                                : '' }}>
+
+                        Withdrawal
+
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Minimum Amount -->
+
+            <div>
+
+                <label
+                    class="block text-sm
+                               font-medium
+                               text-gray-700 mb-1">
+
+                    💰 Minimum Amount
+
+                </label>
+
+                <input
+                    type="number"
+                    name="min_amount"
+                    value="{{ request('min_amount') }}"
+                    min="0"
+                    step="0.01"
+                    placeholder="Min amount"
+                    class="w-full border
+                               border-gray-300
+                               rounded-lg p-2.5">
+
+            </div>
+
+
+            <!-- Maximum Amount -->
+
+            <div>
+
+                <label
+                    class="block text-sm
+                               font-medium
+                               text-gray-700 mb-1">
+
+                    💰 Maximum Amount
+
+                </label>
+
+                <input
+                    type="number"
+                    name="max_amount"
+                    value="{{ request('max_amount') }}"
+                    min="0"
+                    step="0.01"
+                    placeholder="Max amount"
+                    class="w-full border
+                               border-gray-300
+                               rounded-lg p-2.5">
+
+            </div>
+
+
+            <!-- Sort -->
+
+            <div>
+
+                <label
+                    class="block text-sm
+                               font-medium
+                               text-gray-700 mb-1">
+
+                    ↕️ Sort Transactions
+
+                </label>
+
+                <select
+                    name="sort"
+                    class="w-full border
+                               border-gray-300
+                               rounded-lg p-2.5">
+
+                    <option
+                        value="latest"
+                        {{ request('sort', 'latest') === 'latest'
+                                ? 'selected'
+                                : '' }}>
+
+                        Latest First
+
+                    </option>
+
+                    <option
+                        value="oldest"
+                        {{ request('sort') === 'oldest'
+                                ? 'selected'
+                                : '' }}>
+
+                        Oldest First
+
+                    </option>
+
+                    <option
+                        value="amount_low"
+                        {{ request('sort') === 'amount_low'
+                                ? 'selected'
+                                : '' }}>
+
+                        Amount: Low → High
+
+                    </option>
+
+                    <option
+                        value="amount_high"
+                        {{ request('sort') === 'amount_high'
+                                ? 'selected'
+                                : '' }}>
+
+                        Amount: High → Low
+
+                    </option>
+
+                    <option
+                        value="id_asc"
+                        {{ request('sort') === 'id_asc'
+                                ? 'selected'
+                                : '' }}>
+
+                        Transaction ID: Low → High
+
+                    </option>
+
+                    <option
+                        value="id_desc"
+                        {{ request('sort') === 'id_desc'
+                                ? 'selected'
+                                : '' }}>
+
+                        Transaction ID: High → Low
+
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Per Page -->
+
+            <div>
+
+                <label
+                    class="block text-sm
+                               font-medium
+                               text-gray-700 mb-1">
+
+                    🔢 Transactions Per Page
+
+                </label>
+
+                <select
+                    name="per_page"
+                    class="w-full border
+                               border-gray-300
+                               rounded-lg p-2.5">
+
+                    @foreach([5, 10, 25, 50] as $size)
+
+                    <option
+                        value="{{ $size }}"
+                        {{ $perPage == $size
+                                    ? 'selected'
+                                    : '' }}>
+
+                        {{ $size }} Transactions
+
+                    </option>
+
+                    @endforeach
+
+                </select>
+
+            </div>
+
+
+            <!-- From Date -->
+
+            <div>
+
+                <label
+                    class="block text-sm
+                               font-medium
+                               text-gray-700 mb-1">
+
+                    From Date
+
+                </label>
+
+                <input
+                    type="date"
+                    name="from_date"
+                    value="{{ request('from_date') }}"
+                    class="w-full border
+                               border-gray-300
+                               rounded-lg p-2.5">
+
+            </div>
+
+
+            <!-- To Date -->
+
+            <div>
+
+                <label
+                    class="block text-sm
+                               font-medium
+                               text-gray-700 mb-1">
+
+                    To Date
+
+                </label>
+
+                <input
+                    type="date"
+                    name="to_date"
+                    value="{{ request('to_date') }}"
+                    class="w-full border
+                               border-gray-300
+                               rounded-lg p-2.5">
+
+            </div>
+
+        </div>
+
+
+        <!-- Buttons -->
+
+        <div class="flex flex-wrap gap-3 mt-5">
+
+            <button
+                type="submit"
+                class="bg-blue-600
+                           hover:bg-blue-700
+                           text-white px-5 py-2.5
+                           rounded-lg font-semibold">
+
+                🔍 Apply Filters
+
+            </button>
+
+
+            <a
+                href="{{ route('wallet.index') }}"
+                class="bg-gray-200
+                           hover:bg-gray-300
+                           text-gray-800 px-5 py-2.5
+                           rounded-lg font-semibold">
+
+                ↻ Reset All Filters
 
             </a>
 
         </div>
 
+    </form>
 
-        <!-- ===================================================== -->
-        <!-- SEARCH & FILTER -->
-        <!-- ===================================================== -->
 
-        <form
-            method="GET"
-            action="{{ route('wallet.index') }}"
-            class="bg-gray-50 border
-                   border-gray-200
-                   rounded-lg p-4 mb-6">
+    <!-- ===================================================== -->
+    <!-- ACTIVE FILTER SUMMARY -->
+    <!-- ===================================================== -->
 
-            <div class="grid grid-cols-1
-                        md:grid-cols-2
-                        lg:grid-cols-5 gap-4">
+    @if(
+    request('search') ||
+    request('type') ||
+    request('min_amount') ||
+    request('max_amount') ||
+    request('from_date') ||
+    request('to_date') ||
+    request('quick_date')
+    )
 
-                <!-- Search -->
+    <div class="mb-5 bg-blue-50
+                        border border-blue-200
+                        rounded-lg p-4">
 
-                <div class="lg:col-span-2">
+        <p class="text-sm
+                          font-semibold
+                          text-blue-800 mb-2">
 
-                    <label class="block text-sm
-                                  font-medium
-                                  text-gray-700 mb-1">
+            Active Filters
 
-                        Search
+        </p>
 
-                    </label>
+        <div class="flex flex-wrap gap-2 text-sm">
 
-                    <input
-                        type="text"
-                        name="search"
-                        value="{{ request('search') }}"
-                        placeholder="Search type or amount"
-                        class="w-full border
-                               border-gray-300
-                               rounded-lg p-2.5"
-                    >
+            @if(request('search'))
 
-                </div>
+            <span class="bg-white
+                                     border border-blue-200
+                                     rounded-full px-3 py-1">
 
+                Search:
+                {{ request('search') }}
 
-                <!-- Type -->
+            </span>
 
-                <div>
+            @endif
 
-                    <label class="block text-sm
-                                  font-medium
-                                  text-gray-700 mb-1">
 
-                        Type
+            @if(request('type'))
 
-                    </label>
+            <span class="bg-white
+                                     border border-blue-200
+                                     rounded-full px-3 py-1">
 
-                    <select
-                        name="type"
-                        class="w-full border
-                               border-gray-300
-                               rounded-lg p-2.5">
+                Type:
+                {{ ucfirst(request('type')) }}
 
-                        <option value="">
-                            All Types
-                        </option>
+            </span>
 
-                        <option value="deposit"
-                            {{ request('type') === 'deposit'
-                                ? 'selected'
-                                : '' }}>
+            @endif
 
-                            Deposit
 
-                        </option>
+            @if(request('min_amount'))
 
-                        <option value="withdraw"
-                            {{ request('type') === 'withdraw'
-                                ? 'selected'
-                                : '' }}>
+            <span class="bg-white
+                                     border border-blue-200
+                                     rounded-full px-3 py-1">
 
-                            Withdrawal
+                Min:
+                ₹{{ number_format(
+                                (float) request('min_amount'),
+                                2
+                            ) }}
 
-                        </option>
+            </span>
 
-                    </select>
+            @endif
 
-                </div>
 
+            @if(request('max_amount'))
 
-                <!-- From Date -->
+            <span class="bg-white
+                                     border border-blue-200
+                                     rounded-full px-3 py-1">
 
-                <div>
+                Max:
+                ₹{{ number_format(
+                                (float) request('max_amount'),
+                                2
+                            ) }}
 
-                    <label class="block text-sm
-                                  font-medium
-                                  text-gray-700 mb-1">
+            </span>
 
-                        From Date
+            @endif
 
-                    </label>
 
-                    <input
-                        type="date"
-                        name="from_date"
-                        value="{{ request('from_date') }}"
-                        class="w-full border
-                               border-gray-300
-                               rounded-lg p-2.5"
-                    >
+            @if(request('quick_date') === 'today')
 
-                </div>
+            <span class="bg-white
+                                     border border-blue-200
+                                     rounded-full px-3 py-1">
 
+                Date:
+                Today
 
-                <!-- To Date -->
+            </span>
 
-                <div>
+            @elseif(request('quick_date') === 'this_month')
 
-                    <label class="block text-sm
-                                  font-medium
-                                  text-gray-700 mb-1">
+            <span class="bg-white
+                                     border border-blue-200
+                                     rounded-full px-3 py-1">
 
-                        To Date
+                Date:
+                This Month
 
-                    </label>
+            </span>
 
-                    <input
-                        type="date"
-                        name="to_date"
-                        value="{{ request('to_date') }}"
-                        class="w-full border
-                               border-gray-300
-                               rounded-lg p-2.5"
-                    >
+            @endif
 
-                </div>
 
-            </div>
+            @if(request('from_date'))
 
+            <span class="bg-white
+                                     border border-blue-200
+                                     rounded-full px-3 py-1">
 
-            <div class="flex flex-wrap gap-3 mt-4">
+                From:
+                {{ request('from_date') }}
 
-                <button
-                    type="submit"
-                    class="bg-blue-600
-                           hover:bg-blue-700
-                           text-white px-5 py-2.5
-                           rounded-lg font-semibold">
+            </span>
 
-                    Apply Filters
+            @endif
 
-                </button>
 
+            @if(request('to_date'))
 
-                <a
-                    href="{{ route('wallet.index') }}"
-                    class="bg-gray-200
-                           hover:bg-gray-300
-                           text-gray-800 px-5 py-2.5
-                           rounded-lg font-semibold">
+            <span class="bg-white
+                                     border border-blue-200
+                                     rounded-full px-3 py-1">
 
-                    Clear Filters
+                To:
+                {{ request('to_date') }}
 
-                </a>
+            </span>
 
-            </div>
-
-        </form>
-
-
-        <!-- ===================================================== -->
-        <!-- TRANSACTION TABLE -->
-        <!-- ===================================================== -->
-
-        <div class="overflow-x-auto">
-
-            <table class="w-full border-collapse">
-
-                <thead>
-
-                    <tr class="bg-gray-100 text-gray-700">
-
-                        <th class="border border-gray-200 p-3 text-left">
-                            ID
-                        </th>
-
-                        <th class="border border-gray-200 p-3 text-left">
-                            Type
-                        </th>
-
-                        <th class="border border-gray-200 p-3 text-right">
-                            Amount
-                        </th>
-
-                        <th class="border border-gray-200 p-3 text-center">
-                            Status
-                        </th>
-
-                        <th class="border border-gray-200 p-3 text-center">
-                            Date
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody>
-
-                    @forelse($transactions as $transaction)
-
-                        <tr class="hover:bg-gray-50">
-
-                            <td class="border border-gray-200 p-3">
-
-                                #{{ $transaction->id }}
-
-                            </td>
-
-
-                            <td class="border border-gray-200 p-3">
-
-                                @if($transaction->type === 'deposit')
-
-                                    <span class="inline-flex
-                                                 px-3 py-1
-                                                 rounded-full
-                                                 text-xs font-semibold
-                                                 bg-green-100
-                                                 text-green-700">
-
-                                        Deposit
-
-                                    </span>
-
-                                @else
-
-                                    <span class="inline-flex
-                                                 px-3 py-1
-                                                 rounded-full
-                                                 text-xs font-semibold
-                                                 bg-red-100
-                                                 text-red-700">
-
-                                        Withdrawal
-
-                                    </span>
-
-                                @endif
-
-                            </td>
-
-
-                            <td class="border border-gray-200
-                                       p-3 text-right">
-
-                                @if($transaction->type === 'deposit')
-
-                                    <span class="font-semibold
-                                                 text-green-600">
-
-                                        + ₹
-                                        {{ number_format(
-                                            abs((float) $transaction->amount),
-                                            2
-                                        ) }}
-
-                                    </span>
-
-                                @else
-
-                                    <span class="font-semibold
-                                                 text-red-600">
-
-                                        - ₹
-                                        {{ number_format(
-                                            abs((float) $transaction->amount),
-                                            2
-                                        ) }}
-
-                                    </span>
-
-                                @endif
-
-                            </td>
-
-
-                            <td class="border border-gray-200
-                                       p-3 text-center">
-
-                                <span class="inline-flex
-                                             px-3 py-1
-                                             rounded-full
-                                             text-xs font-semibold
-                                             bg-blue-100
-                                             text-blue-700">
-
-                                    Completed
-
-                                </span>
-
-                            </td>
-
-
-                            <td class="border border-gray-200
-                                       p-3 text-center">
-
-                                {{ $transaction->created_at
-                                    ->format('d M Y H:i') }}
-
-                            </td>
-
-                        </tr>
-
-                    @empty
-
-                        <tr>
-
-                            <td colspan="5"
-                                class="border border-gray-200
-                                       p-8 text-center
-                                       text-gray-500">
-
-                                No transactions found.
-
-                            </td>
-
-                        </tr>
-
-                    @endforelse
-
-                </tbody>
-
-            </table>
+            @endif
 
         </div>
 
+    </div>
 
-        <!-- ===================================================== -->
-        <!-- PAGINATION -->
-        <!-- ===================================================== -->
+    @endif
 
-        @if($transactions->hasPages())
 
-            <div class="mt-6">
+    <!-- ===================================================== -->
+    <!-- TRANSACTION TABLE -->
+    <!-- ===================================================== -->
 
-                {{ $transactions->links() }}
+    <div class="overflow-x-auto">
 
-            </div>
+        <table class="w-full border-collapse">
 
-        @endif
+            <thead>
+
+                <tr class="bg-gray-100 text-gray-700">
+
+                    <th
+                        class="border border-gray-200
+                                   p-3 text-left">
+
+                        ID
+
+                    </th>
+
+                    <th
+                        class="border border-gray-200
+                                   p-3 text-left">
+
+                        Type
+
+                    </th>
+
+                    <th
+                        class="border border-gray-200
+                                   p-3 text-right">
+
+                        Amount
+
+                    </th>
+
+                    <th
+                        class="border border-gray-200
+                                   p-3 text-center">
+
+                        Status
+
+                    </th>
+
+                    <th
+                        class="border border-gray-200
+                                   p-3 text-center">
+
+                        Date
+
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                @forelse($transactions as $transaction)
+
+                <tr class="hover:bg-gray-50">
+
+                    <td
+                        class="border border-gray-200
+                                       p-3">
+
+                        #{{ $transaction->id }}
+
+                    </td>
+
+
+                    <td
+                        class="border border-gray-200
+                                       p-3">
+
+                        @if($transaction->type === 'deposit')
+
+                        <span
+                            class="inline-flex
+                                               px-3 py-1
+                                               rounded-full
+                                               text-xs font-semibold
+                                               bg-green-100
+                                               text-green-700">
+
+                            Deposit
+
+                        </span>
+
+                        @else
+
+                        <span
+                            class="inline-flex
+                                               px-3 py-1
+                                               rounded-full
+                                               text-xs font-semibold
+                                               bg-red-100
+                                               text-red-700">
+
+                            Withdrawal
+
+                        </span>
+
+                        @endif
+
+                    </td>
+
+
+                    <td
+                        class="border border-gray-200
+                                       p-3 text-right">
+
+                        @if($transaction->type === 'deposit')
+
+                        <span
+                            class="font-semibold
+                                               text-green-600">
+
+                            + ₹
+                            {{ number_format(
+                                            abs((float) $transaction->amount),
+                                            2
+                                        ) }}
+
+                        </span>
+
+                        @else
+
+                        <span
+                            class="font-semibold
+                                               text-red-600">
+
+                            - ₹
+                            {{ number_format(
+                                            abs((float) $transaction->amount),
+                                            2
+                                        ) }}
+
+                        </span>
+
+                        @endif
+
+                    </td>
+
+
+                    <td
+                        class="border border-gray-200
+                                       p-3 text-center">
+
+                        <span
+                            class="inline-flex
+                                           px-3 py-1
+                                           rounded-full
+                                           text-xs font-semibold
+                                           bg-blue-100
+                                           text-blue-700">
+
+                            Completed
+
+                        </span>
+
+                    </td>
+
+
+                    <td
+                        class="border border-gray-200
+                                       p-3 text-center">
+
+                        {{ $transaction->created_at
+                                    ->format('d M Y H:i') }}
+
+                    </td>
+
+                </tr>
+
+                @empty
+
+                <tr>
+
+                    <td
+                        colspan="5"
+                        class="border border-gray-200
+                                       p-8 text-center
+                                       text-gray-500">
+
+                        <div class="text-3xl mb-2">
+                            🔍
+                        </div>
+
+                        No transactions found
+                        for the selected filters.
+
+                    </td>
+
+                </tr>
+
+                @endforelse
+
+            </tbody>
+
+        </table>
 
     </div>
+
+
+    <!-- ===================================================== -->
+    <!-- PAGINATION INFO -->
+    <!-- ===================================================== -->
+
+    @if($transactions->total() > 0)
+
+    <div
+        class="flex flex-col md:flex-row
+                       md:items-center
+                       md:justify-between
+                       gap-3 mt-6">
+
+        <p class="text-sm text-gray-600">
+
+            Showing
+
+            <strong>
+                {{ $transactions->firstItem() }}
+            </strong>
+
+            to
+
+            <strong>
+                {{ $transactions->lastItem() }}
+            </strong>
+
+            of
+
+            <strong>
+                {{ $transactions->total() }}
+            </strong>
+
+            filtered transactions
+
+        </p>
+
+        <p class="text-sm text-gray-500">
+
+            {{ $perPage }}
+            per page
+
+        </p>
+
+    </div>
+
+    @endif
+
+
+    <!-- ===================================================== -->
+    <!-- PAGINATION -->
+    <!-- ===================================================== -->
+
+    @if($transactions->hasPages())
+
+    <div class="mt-6">
+
+        {{ $transactions->links() }}
+
+    </div>
+
+    @endif
+
+</div>
 
 @endsection
