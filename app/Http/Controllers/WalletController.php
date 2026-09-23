@@ -30,43 +30,51 @@ class WalletController extends Controller
         */
 
         $allTransactions = $user->transactions()
-            ->latest()
+            ->oldest()
             ->get();
 
         /*
         |--------------------------------------------------------------------------
-        | Transaction Search & Filtering
+        | Transaction Query
         |--------------------------------------------------------------------------
         */
 
-        $transactionQuery = $user->transactions()
-            ->latest();
+        $transactionQuery = $user->transactions();
 
-        // Search by transaction type or amount
+        /*
+        |--------------------------------------------------------------------------
+        | 1. Transaction Search
+        |--------------------------------------------------------------------------
+        |
+        | Search by:
+        | - Transaction ID
+        | - Transaction type
+        | - Transaction amount
+        |
+        */
+
         if ($request->filled('search')) {
 
-            $search = $request->input('search');
+            $search = trim($request->input('search'));
 
             $transactionQuery->where(function ($query) use ($search) {
 
-                $query->where(
-                    'type',
-                    'like',
-                    "%{$search}%"
-                )
-                ->orWhere(
-                    'amount',
-                    'like',
-                    "%{$search}%"
-                );
+                $query->where('id', 'like', "%{$search}%")
+                    ->orWhere('type', 'like', "%{$search}%")
+                    ->orWhere('amount', 'like', "%{$search}%");
 
             });
         }
 
-        // Filter by transaction type
+        /*
+        |--------------------------------------------------------------------------
+        | Transaction Type Filter
+        |--------------------------------------------------------------------------
+        */
+
         if (
             $request->filled('type') &&
-            in_array($request->type, ['deposit', 'withdraw'])
+            in_array($request->type, ['deposit', 'withdraw'], true)
         ) {
 
             $transactionQuery->where(
@@ -75,7 +83,80 @@ class WalletController extends Controller
             );
         }
 
-        // Filter from date
+        /*
+        |--------------------------------------------------------------------------
+        | 2. Minimum Amount Filter
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $request->filled('min_amount') &&
+            is_numeric($request->min_amount)
+        ) {
+
+            $minAmount = max(
+                0,
+                (float) $request->min_amount
+            );
+
+            $transactionQuery->whereRaw(
+                'ABS(amount) >= ?',
+                [$minAmount]
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | 3. Maximum Amount Filter
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $request->filled('max_amount') &&
+            is_numeric($request->max_amount)
+        ) {
+
+            $maxAmount = max(
+                0,
+                (float) $request->max_amount
+            );
+
+            $transactionQuery->whereRaw(
+                'ABS(amount) <= ?',
+                [$maxAmount]
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | 6 & 7. Quick Date Filters
+        |--------------------------------------------------------------------------
+        |
+        | today
+        | this_month
+        |
+        */
+
+        if ($request->quick_date === 'today') {
+
+            $transactionQuery->whereDate(
+                'created_at',
+                today()
+            );
+
+        } elseif ($request->quick_date === 'this_month') {
+
+            $transactionQuery
+                ->whereYear('created_at', now()->year)
+                ->whereMonth('created_at', now()->month);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Custom From Date
+        |--------------------------------------------------------------------------
+        */
+
         if ($request->filled('from_date')) {
 
             $transactionQuery->whereDate(
@@ -85,7 +166,12 @@ class WalletController extends Controller
             );
         }
 
-        // Filter to date
+        /*
+        |--------------------------------------------------------------------------
+        | Custom To Date
+        |--------------------------------------------------------------------------
+        */
+
         if ($request->filled('to_date')) {
 
             $transactionQuery->whereDate(
@@ -97,12 +183,142 @@ class WalletController extends Controller
 
         /*
         |--------------------------------------------------------------------------
+        | 4. Transaction Sorting
+        |--------------------------------------------------------------------------
+        */
+
+        $sort = $request->input(
+            'sort',
+            'oldest'
+        );
+
+        switch ($sort) {
+
+            case 'oldest':
+
+                $transactionQuery
+                    ->orderBy('created_at', 'asc')
+                    ->orderBy('id', 'asc');
+
+                break;
+
+            case 'amount_low':
+
+                $transactionQuery
+                    ->orderByRaw('ABS(amount) ASC')
+                    ->orderBy('id', 'asc');
+
+                break;
+
+            case 'amount_high':
+
+                $transactionQuery
+                    ->orderByRaw('ABS(amount) DESC')
+                    ->orderBy('id', 'desc');
+
+                break;
+
+            case 'id_asc':
+
+                $transactionQuery
+                    ->orderBy('id', 'asc');
+
+                break;
+
+            case 'id_desc':
+
+                $transactionQuery
+                    ->orderBy('id', 'desc');
+
+                break;
+
+            default:
+
+                $sort = 'oldest';
+
+                $transactionQuery
+                    ->orderBy('created_at', 'desc')
+                    ->orderBy('id', 'desc');
+
+                break;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | 8. Filtered Transaction Count
+        |--------------------------------------------------------------------------
+        */
+
+        $filteredTransactionCount =
+            (clone $transactionQuery)->count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | 9. Filtered Deposit Total
+        |--------------------------------------------------------------------------
+        */
+
+        $filteredDepositTotal =
+            (clone $transactionQuery)
+                ->where('type', 'deposit')
+                ->get()
+                ->sum(function ($transaction) {
+
+                    return abs(
+                        (float) $transaction->amount
+                    );
+
+                });
+
+        /*
+        |--------------------------------------------------------------------------
+        | 10. Filtered Withdrawal Total
+        |--------------------------------------------------------------------------
+        */
+
+        $filteredWithdrawalTotal =
+            (clone $transactionQuery)
+                ->where('type', 'withdraw')
+                ->get()
+                ->sum(function ($transaction) {
+
+                    return abs(
+                        (float) $transaction->amount
+                    );
+
+                });
+
+        /*
+        |--------------------------------------------------------------------------
+        | 5. Transactions Per Page
+        |--------------------------------------------------------------------------
+        */
+
+        $allowedPerPage = [
+            5,
+            10,
+            25,
+            50,
+        ];
+
+        $perPage = (int) $request->input(
+            'per_page',
+            5
+        );
+
+        if (!in_array($perPage, $allowedPerPage, true)) {
+
+            $perPage = 5;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
         | Paginated Transactions
         |--------------------------------------------------------------------------
         */
 
         $transactions = $transactionQuery
-            ->paginate(10)
+            ->paginate($perPage)
             ->withQueryString();
 
         /*
@@ -177,14 +393,8 @@ class WalletController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | WALLET TRANSACTION INSIGHTS
-        |--------------------------------------------------------------------------
-        */
-
-        /*
-        |----------------------------------------------------------------------
         | Highest Deposit
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         $highestDeposit = $allTransactions
@@ -203,9 +413,9 @@ class WalletController extends Controller
             : 0;
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Highest Withdrawal
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         $highestWithdrawal = $allTransactions
@@ -224,53 +434,45 @@ class WalletController extends Controller
             : 0;
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Withdrawal Rate
-        |----------------------------------------------------------------------
-        |
-        | Shows what percentage of deposited money has been withdrawn.
-        |
+        |--------------------------------------------------------------------------
         */
 
         $withdrawalRate = 0;
 
         if ($totalDeposits > 0) {
 
-            $withdrawalRate = (
-                $totalWithdrawals /
-                $totalDeposits
-            ) * 100;
-
+            $withdrawalRate =
+                (
+                    $totalWithdrawals /
+                    $totalDeposits
+                ) * 100;
         }
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Latest Transaction
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         $latestTransaction = $allTransactions->first();
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Low Balance Warning
-        |----------------------------------------------------------------------
-        |
-        | Balance below ₹500 is considered a low balance.
-        |
+        |--------------------------------------------------------------------------
         */
 
         $lowBalanceThreshold = 500;
 
-        $isLowBalance = $balance < $lowBalanceThreshold;
+        $isLowBalance =
+            $balance < $lowBalanceThreshold;
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Large Withdrawal Alert
-        |----------------------------------------------------------------------
-        |
-        | A withdrawal of ₹5,000 or more is highlighted.
-        |
+        |--------------------------------------------------------------------------
         */
 
         $largeWithdrawalThreshold = 5000;
@@ -289,9 +491,9 @@ class WalletController extends Controller
             ->first();
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Wallet Activity Insight
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         if ($transactionCount === 0) {
@@ -323,7 +525,6 @@ class WalletController extends Controller
 
             $walletInsight =
                 'Your wallet activity is currently balanced.';
-
         }
 
         /*
@@ -332,42 +533,45 @@ class WalletController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        return view('wallet.index', compact(
+        return view(
+            'wallet.index',
+            compact(
 
-            // Wallet
-            'balance',
+                'balance',
 
-            // Transactions
-            'transactions',
+                'transactions',
 
-            // Analytics
-            'totalDeposits',
-            'totalWithdrawals',
-            'depositCount',
-            'withdrawalCount',
-            'transactionCount',
+                'totalDeposits',
+                'totalWithdrawals',
+                'depositCount',
+                'withdrawalCount',
+                'transactionCount',
 
-            // Monthly
-            'monthlyDeposits',
-            'monthlyWithdrawals',
+                'monthlyDeposits',
+                'monthlyWithdrawals',
 
-            // Insights
-            'highestDeposit',
-            'highestDepositAmount',
-            'highestWithdrawal',
-            'highestWithdrawalAmount',
-            'withdrawalRate',
-            'latestTransaction',
+                'highestDeposit',
+                'highestDepositAmount',
+                'highestWithdrawal',
+                'highestWithdrawalAmount',
+                'withdrawalRate',
+                'latestTransaction',
 
-            // Alerts
-            'lowBalanceThreshold',
-            'isLowBalance',
-            'largeWithdrawalThreshold',
-            'largeWithdrawal',
+                'lowBalanceThreshold',
+                'isLowBalance',
+                'largeWithdrawalThreshold',
+                'largeWithdrawal',
 
-            // Insight
-            'walletInsight'
-        ));
+                'walletInsight',
+
+                'filteredTransactionCount',
+                'filteredDepositTotal',
+                'filteredWithdrawalTotal',
+
+                'perPage',
+                'sort'
+            )
+        );
     }
 
 
@@ -433,13 +637,15 @@ class WalletController extends Controller
 
     /**
      * Export wallet transactions as CSV.
+     *
+     * The same filters currently selected on the
+     * wallet page are applied to the CSV export.
      */
     public function export(Request $request): Response
     {
         $user = $request->user();
 
-        $transactionQuery = $user->transactions()
-            ->latest();
+        $transactionQuery = $user->transactions();
 
         /*
         |--------------------------------------------------------------------------
@@ -449,11 +655,18 @@ class WalletController extends Controller
 
         if ($request->filled('search')) {
 
-            $search = $request->input('search');
+            $search = trim(
+                $request->input('search')
+            );
 
             $transactionQuery->where(function ($query) use ($search) {
 
                 $query->where(
+                    'id',
+                    'like',
+                    "%{$search}%"
+                )
+                ->orWhere(
                     'type',
                     'like',
                     "%{$search}%"
@@ -469,13 +682,17 @@ class WalletController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Type Filter
+        | Type
         |--------------------------------------------------------------------------
         */
 
         if (
             $request->filled('type') &&
-            in_array($request->type, ['deposit', 'withdraw'])
+            in_array(
+                $request->type,
+                ['deposit', 'withdraw'],
+                true
+            )
         ) {
 
             $transactionQuery->where(
@@ -486,7 +703,77 @@ class WalletController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Date Filters
+        | Minimum Amount
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $request->filled('min_amount') &&
+            is_numeric($request->min_amount)
+        ) {
+
+            $minAmount = max(
+                0,
+                (float) $request->min_amount
+            );
+
+            $transactionQuery->whereRaw(
+                'ABS(amount) >= ?',
+                [$minAmount]
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Maximum Amount
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $request->filled('max_amount') &&
+            is_numeric($request->max_amount)
+        ) {
+
+            $maxAmount = max(
+                0,
+                (float) $request->max_amount
+            );
+
+            $transactionQuery->whereRaw(
+                'ABS(amount) <= ?',
+                [$maxAmount]
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Quick Date Filter
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->quick_date === 'today') {
+
+            $transactionQuery->whereDate(
+                'created_at',
+                today()
+            );
+
+        } elseif ($request->quick_date === 'this_month') {
+
+            $transactionQuery
+                ->whereYear(
+                    'created_at',
+                    now()->year
+                )
+                ->whereMonth(
+                    'created_at',
+                    now()->month
+                );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Custom Date Filters
         |--------------------------------------------------------------------------
         */
 
@@ -508,7 +795,68 @@ class WalletController extends Controller
             );
         }
 
-        $transactions = $transactionQuery->get();
+        /*
+        |--------------------------------------------------------------------------
+        | Sorting
+        |--------------------------------------------------------------------------
+        */
+
+        $sort = $request->input(
+            'sort',
+            'latest'
+        );
+
+        switch ($sort) {
+
+            case 'oldest':
+
+                $transactionQuery
+                    ->orderBy('created_at', 'asc')
+                    ->orderBy('id', 'asc');
+
+                break;
+
+            case 'amount_low':
+
+                $transactionQuery
+                    ->orderByRaw('ABS(amount) ASC')
+                    ->orderBy('id', 'asc');
+
+                break;
+
+            case 'amount_high':
+
+                $transactionQuery
+                    ->orderByRaw('ABS(amount) DESC')
+                    ->orderBy('id', 'desc');
+
+                break;
+
+            case 'id_asc':
+
+                $transactionQuery
+                    ->orderBy('id', 'asc');
+
+                break;
+
+            case 'id_desc':
+
+                $transactionQuery
+                    ->orderBy('id', 'desc');
+
+                break;
+
+            default:
+
+                $transactionQuery
+                    ->orderBy('created_at', 'desc')
+                    ->orderBy('id', 'desc');
+
+                break;
+        }
+
+        $transactions =
+            $transactionQuery->get();
 
         /*
         |--------------------------------------------------------------------------
@@ -575,7 +923,6 @@ class WalletController extends Controller
                     ->format('d-m-Y H:i:s'),
 
                 'Completed',
-
             ]);
         }
 
