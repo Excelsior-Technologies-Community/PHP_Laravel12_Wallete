@@ -93,6 +93,38 @@ Route::middleware('auth')->group(function () {
         'export'
     ])->name('wallet.export');
 
+    /*
+    |--------------------------------------------------------------------------
+    | P2P Wallet Transfer
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/wallet/transfer', [
+        WalletController::class,
+        'transferView'
+    ])->name('wallet.transfer');
+
+    Route::post('/wallet/transfer', [
+        WalletController::class,
+        'transferStore'
+    ])->name('wallet.transfer.store');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Financial Analytics
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/wallet/analytics', [
+        WalletController::class,
+        'analyticsView'
+    ])->name('wallet.analytics');
+
+    Route::get('/wallet/analytics/data', [
+        WalletController::class,
+        'analyticsData'
+    ])->name('wallet.analytics.data');
+
 });
 
 
