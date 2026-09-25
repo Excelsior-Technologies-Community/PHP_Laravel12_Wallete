@@ -15,6 +15,15 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('wallet.index')" :active="request()->routeIs('wallet.index')">
+                        💳 {{ __('Wallet') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('wallet.transfer')" :active="request()->routeIs('wallet.transfer')">
+                        💸 {{ __('P2P Transfer') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('wallet.analytics')" :active="request()->routeIs('wallet.analytics')">
+                        📈 {{ __('Analytics') }}
+                    </x-nav-link>
                 </div>
             </div>
 
