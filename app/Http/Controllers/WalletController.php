@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Services\WalletSecurityService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -603,7 +605,7 @@ class WalletController extends Controller
     /**
      * Withdraw money from wallet.
      */
-    public function withdraw(Request $request)
+    public function withdraw(Request $request, WalletSecurityService $securityService)
     {
         $request->validate([
             'amount' => [
@@ -615,23 +617,16 @@ class WalletController extends Controller
         ]);
 
         $user = $request->user();
+        $amount = (float)$request->amount;
 
-        if (!$user->canWithdraw($request->amount)) {
-
-            return back()->with(
-                'error',
-                'Insufficient Balance'
-            );
+        $check = $securityService->validateWithdrawalPolicy($user, $amount);
+        if (!$check['allowed']) {
+            return back()->with('error', $check['message']);
         }
 
-        $user->withdraw(
-            $request->amount
-        );
+        $user->withdraw($amount);
 
-        return back()->with(
-            'success',
-            'Money Withdrawn Successfully'
-        );
+        return back()->with('success', 'Money Withdrawn Successfully');
     }
 
 
@@ -947,5 +942,71 @@ class WalletController extends Controller
                     '"',
             ]
         );
+    }
+
+    /**
+     * Display P2P Transfer view.
+     */
+    public function transferView(Request $request)
+    {
+        $user = $request->user();
+        $recentTransfers = $user->transactions()
+            ->where('type', 'transfer')
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        return view('wallet.transfer', compact('user', 'recentTransfers'));
+    }
+
+    /**
+     * Store P2P Transfer.
+     */
+    public function transferStore(Request $request, WalletSecurityService $securityService)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'amount' => 'required|numeric|min:0.01|max:100000',
+        ]);
+
+        $sender = $request->user();
+        $recipient = User::where('email', $request->input('email'))->first();
+        $amount = (float)$request->input('amount');
+
+        $check = $securityService->validateTransferPolicy($sender, $recipient, $amount);
+
+        if (!$check['allowed']) {
+            return back()->with('error', $check['message']);
+        }
+
+        // Execute P2P Transfer using bavix/laravel-wallet transfer mechanism
+        $sender->transfer($recipient, $amount);
+
+        $msg = "Successfully transferred $" . number_format($amount, 2) . " to {$recipient->name} ({$recipient->email}).";
+        if (!empty($check['is_high_value'])) {
+            $msg .= " [High-Value Transfer Safety Alert]";
+        }
+
+        return redirect()->route('wallet.transfer')->with('success', $msg);
+    }
+
+    /**
+     * Display Financial Analytics Dashboard.
+     */
+    public function analyticsView(Request $request, WalletSecurityService $securityService)
+    {
+        $user = $request->user();
+        $analytics = $securityService->getWalletAnalyticsData($user);
+
+        return view('wallet.analytics', compact('user', 'analytics'));
+    }
+
+    /**
+     * Return JSON data for analytics charts.
+     */
+    public function analyticsData(Request $request, WalletSecurityService $securityService)
+    {
+        $user = $request->user();
+        return response()->json($securityService->getWalletAnalyticsData($user));
     }
 }
